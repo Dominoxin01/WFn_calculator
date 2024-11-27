@@ -145,12 +145,13 @@ def CentrifugalBarrier(mu_12, l, r):
       V_l = np.append(V_l,((h_bar**2)/(2*mu_12))*l*(l+1)/(i**2))
   return V_l
 
-def Coulomb(Z_1, Z_2, r):
+def Coulomb(Z_1, Z_2, R, r):
   """Calculates the Coulomb potential.
 
   Args:
       Z_1 (_type_): Charge of cluster 1.
       Z_2 (_type_): Charge of cluster 2.
+      R (_type_): The nuclear radius given by r_0(A1^(1/3)+A2^(1/3)), with A1 and A2 being the masses of the nuclei in amu.
       r (_type_): radial distancem can be either an array or a single value.
 
   Returns:
@@ -183,11 +184,11 @@ def Coulomb(Z_1, Z_2, r):
        print("Something went wrong :/...")
   return V_C
 
-def SpinOrbit(V_sl, j, l, s, R, a, r):
+def SpinOrbit(V_sl0, j, l, s, R, a, r):
   """_summary_
 
   Args:
-      V_sl (_type_): Potential depth in MeV.
+      V_sl0 (_type_): Potential depth in MeV.
       j (_type_): J value of the compound nucleus.
       l (_type_): Orbital angular momentum of the two clusters.
       s (_type_): Spin of one of the two clusters.
@@ -203,18 +204,18 @@ def SpinOrbit(V_sl, j, l, s, R, a, r):
   e = (h_bar*alpha)**(0.5) #elementary charge
   m_pi = 139.570 #pion mass in MeV/c
 
-  ls = j(j+1)-l(l+1)-s(s+1)
+  ls = j*(j+1)-l*(l+1)-s*(s+1)
 
   #if r is a number:
   if isinstance(r, np.ndarray) != True:
     #Spin-orbit potential:
-    V_sl = -1.0*ls*V_sl*np.exp((r-R)/a) * ((h_bar)**2) / (2*((m_pi)**2)*r*a*((1+np.exp((r-R)/a))**2))
+    V_sl = -1.0*ls*V_sl0*np.exp((r-R)/a) * ((h_bar)**2) / (2*((m_pi)**2)*r*a*((1+np.exp((r-R)/a))**2))
 
   elif isinstance(r, np.ndarray):
     V_sl = np.empty(0)
     for i in r:
       #Spin-orbit potential:
-      V_sl = np.append(V_sl,-1.0*ls*V_sl*np.exp((r-R)/a) * ((h_bar)**2) / (2*((m_pi)**2)*r*a*((1+np.exp((r-R)/a))**2)))
+      V_sl = np.append(V_sl,-1.0*ls*V_sl0*np.exp((i-R)/a) * ((h_bar)**2) / (2*((m_pi)**2)*i*a*((1+np.exp((i-R)/a))**2)))
 
   return V_sl
   
